@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import {createStore} from 'redux'
 import {Provider, connect} from 'react-redux'
 // Redux向けに再構成したカウンター
-class ReduxCounter extends React.Component {
+export class ReduxCounter extends React.Component {
     render() {
         const {count, onIncrement, onDecrement} = this.props
         return (
@@ -58,7 +58,7 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-let ReduxCounterApp = connect(mapStateToProps, mapDispatchToProps)(ReduxCounter);
+export let ReduxCounterApp = connect(mapStateToProps, mapDispatchToProps)(ReduxCounter);
 
 // レンダリング
 ReactDOM.render(
