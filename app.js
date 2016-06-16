@@ -24,12 +24,12 @@ router.get('/list', async function(ctx, next) {
     ctx.response.body = result;
 });
 router.get("/", async(ctx, next) => {
+    const result = await db.scan();
     await next();
-    ctx.body = ReactDOMServer.renderToString(< Base count = {0} / >);
-});
-router.get("/graph", async(ctx, next) => {
-    await next();
-    ctx.body = ReactDOMServer.renderToString(< Graph / >);
+    const count = statistics.extensions_count(result);
+    const min = statistics.parameters_min(result);
+    const max = statistics.parameters_max(result);
+    ctx.body = ReactDOMServer.renderToString(< Base count = {count} min = {min} max = {max}/>);
 });
 router.get('/show', async function(ctx, next) {
     const result = await db.scan();
