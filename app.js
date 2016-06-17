@@ -29,8 +29,17 @@ router.get("/", async(ctx, next) => {
     const count = statistics.extensions_count(result);
     const min = statistics.parameters_min(result);
     const max = statistics.parameters_max(result);
-    ctx.body = ReactDOMServer.renderToString(< Base count = {count} min = {min} max = {max}/>);
+    ctx.body = ReactDOMServer.renderToString(< Base count = {
+        count
+    }
+    min = {
+        min
+    }
+    max = {
+        max
+    } />);
 });
+
 router.get('/show', async function(ctx, next) {
     const result = await db.scan();
     ctx.response.body = {
