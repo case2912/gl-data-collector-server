@@ -19,10 +19,19 @@ router.options('/record', async function(ctx, next) {
     ctx.response.set("Access-Control-Allow-Origin", "*");
     ctx.response.set("Access-Control-Allow-Headers", "Content-Type");
 });
+router.get('/test', async function(ctx, next) {
+    await next();
+    ctx.response.set("Access-Control-Allow-Origin", "*");
+    ctx.response.body = "レスポンスですよー";
+});
 router.get('/list', async function(ctx, next) {
     const result = await db.scan();
     ctx.response.body = result;
 });
+async function A(){
+  await something();
+  return 0;
+}
 router.get("/", async(ctx, next) => {
     const result = await db.scan();
     await next();
