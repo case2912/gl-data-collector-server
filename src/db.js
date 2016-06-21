@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import vogels from "vogels";
 import Joi from "joi";
 import UAParser from "ua-parser-js";

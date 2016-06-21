@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import * as Targets from "./statistics-target";
 
 export const extensions_count = (result) => {

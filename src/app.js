@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import Koa from 'koa';
 import routerGenerator from "koa-router";
 import bodyParser from "koa-bodyparser";
@@ -16,14 +17,6 @@ router.options('/record', async function(ctx, next) {
     await next();
     ctx.response.set("Access-Control-Allow-Origin", "*");
     ctx.response.set("Access-Control-Allow-Headers", "Content-Type");
-});
-router.get("/", async(ctx, next) => {
-    const result = await db.scan();
-    await next();
-    const count = statistics.extensions_count(result);
-    const min = statistics.parameters_min(result);
-    const max = statistics.parameters_max(result);
-    ctx.body = ReactDOMServer.renderToString(<Base count={count}/>);
 });
 router.get('/list', async function(ctx, next) {
     await next();

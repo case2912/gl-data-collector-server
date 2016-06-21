@@ -101,9 +101,10 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-
+#dynamoDB
 dist
 credentials.json
+lib
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
