@@ -4,7 +4,8 @@
   "description": "a koa application",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel-node app.js"
+    "start": "./node_modules/.bin/babel-node app.js",
+    "aggregate": "babel-node data-aggregation.js"
   },
   "author": "case2912",
   "license": "ISC",

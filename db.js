@@ -16,6 +16,7 @@ const table = vogels.define("webgl_statistic", {
         domain: Joi.string()
     }
 });
+
 vogels.createTables(err => {
     if (err) {
         console.log("Initializing DynamoDB tables was failed", err);
@@ -23,6 +24,7 @@ vogels.createTables(err => {
         console.log("DynamoDB tables was initialized without any error");
     }
 });
+
 export const put = (data) => {
     const parser = new UAParser();
     parser.setUA(data.user);
@@ -48,7 +50,6 @@ export const scan = () => {
     return new Promise((resolve, reject) => {
         table
             .scan()
-            .limit(1000)
             .loadAll()
             .exec((err, data) => {
                 if (err) {

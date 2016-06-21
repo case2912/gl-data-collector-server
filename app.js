@@ -4,8 +4,6 @@ import bodyParser from "koa-bodyparser";
 import * as db from "./db";
 import * as statistics from "./statistics";
 import React from "react";
-import ReactDOMServer from 'react-dom/server';
-import Base from "./base";
 const app = new Koa();
 const router = new routerGenerator();
 router.post('/record', async function(ctx, next) {
@@ -19,39 +17,51 @@ router.options('/record', async function(ctx, next) {
     ctx.response.set("Access-Control-Allow-Origin", "*");
     ctx.response.set("Access-Control-Allow-Headers", "Content-Type");
 });
-router.get('/test', async function(ctx, next) {
-    await next();
-    ctx.response.set("Access-Control-Allow-Origin", "*");
-    ctx.response.body = "レスポンスですよー";
-});
-router.get('/list', async function(ctx, next) {
-    const result = await db.scan();
-    ctx.response.body = result;
-});
-async function A(){
-  await something();
-  return 0;
-}
 router.get("/", async(ctx, next) => {
     const result = await db.scan();
     await next();
     const count = statistics.extensions_count(result);
     const min = statistics.parameters_min(result);
     const max = statistics.parameters_max(result);
-    ctx.body = ReactDOMServer.renderToString(
-      <Base count={count} min={min} max={max} />
-    );
+    ctx.body = ReactDOMServer.renderToString(<Base count={count}/>);
 });
-
-router.get('/show', async function(ctx, next) {
+router.get('/list', async function(ctx, next) {
+    await next();
     const result = await db.scan();
-    ctx.response.body = {
-        count: statistics.extensions_count(result),
-        min: statistics.parameters_min(result),
-        max: statistics.parameters_max(result)
-    };
+    ctx.response.body = result;
 });
-
+router.get('/list/browser', async function(ctx, next) {
+    await next();
+    ctx.body = "/list/browser";
+});
+router.get('/list/browser/:browser_name', async function(ctx, next) {
+    await next();
+    ctx.body = "list/browser/" + ctx.params.browser_name;
+});
+router.get('/list/browser/:browser_name/:browser_version', async function(ctx, next) {
+    await next();
+    ctx.body = "list/browser/" + ctx.params.browser_name + "/" + ctx.params.browser_version;
+});
+router.get('/list/browser/:browser_name/:browser_version/:os_name', async function(ctx, next) {
+    await next();
+    ctx.body = "list/browser/" + ctx.params.browser_name + "/" + ctx.params.browser_version + "/" + ctx.params.os_name;
+});
+router.get('/list/browser/:browser_name/:browser_version/:os_name/:os_version', async function(ctx, next) {
+    await next();
+    ctx.body = "list/browser/" + ctx.params.browser_name + "/" + ctx.params.browser_version + "/" + ctx.params.os_name + "/" + ctx.params.os_version;
+});
+router.get('/list/os', async function(ctx, next) {
+    await next();
+    ctx.body = "/list/os";
+});
+router.get('/list/os/:os_name', async function(ctx, next) {
+    await next();
+    ctx.body = "/list/os/" + ctx.params.os_name;
+});
+router.get('/list/os/:os_name/:os_version', async function(ctx, next) {
+    await next();
+    ctx.body = "/list/os/" + ctx.params.os_name + "/" + ctx.params.os_version;
+});
 app.listen(3000, () => {
     console.log("listening on port 3000");
 });
