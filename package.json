@@ -6,6 +6,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node lib/app.js",
         "build": "babel src --out-dir lib",
+        "postbuild":"mv ./lib/app.js ./app.js",
         "aggregate": "babel-node dist/data-aggregation.js"
     },
     "author": "case2912",
