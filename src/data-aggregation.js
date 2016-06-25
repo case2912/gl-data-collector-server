@@ -1,7 +1,6 @@
 import "babel-polyfill";
 import vogels from "vogels";
 import Joi from "joi";
-import db from "./db";
 import statistics from "./statistics";
 vogels.AWS.config.loadFromPath("credentials.json");
 
@@ -21,3 +20,22 @@ vogels.createTables(err => {
         console.log("DynamoDB tables was initialized without any error");
     }
 });
+export const isAggregated = (name) => {
+    return new Promise((resolve, reject) => {
+        statisticsTable
+            .scan()
+            .where('name').equals(name)
+            .select('COUNT')
+            .exec((err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (data.Count === 0) {
+                        resolve(false);
+                    } else {
+                        resolve(true);
+                    }
+                }
+            });
+    });
+}
