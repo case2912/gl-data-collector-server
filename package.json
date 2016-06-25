@@ -4,6 +4,7 @@
     "description": "a koa application",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
+        "prestart":"npm build",
         "start": "node lib/app.js",
         "build": "babel src --out-dir lib",
         "aggregate": "node lib/data-aggregation.js"
