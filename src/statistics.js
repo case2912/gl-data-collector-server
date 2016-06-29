@@ -15,7 +15,7 @@ export const extensions_count = (result) => {
 }
 export const parameters_min = (result) => {
     return new Promise(resolve => {
-        const min = [Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity];
+        const min = [9E12, 9E12, 9E12, 9E12, 9E12, 9E12, 9E12, 9E12, 9E12, 9E12, 9E12, 9E12];
         for (let i = 0; i < result.Count; i++) {
             for (var j = 0; j < Targets.parameters.length; j++) {
                 min[j] > result.Items[i].attrs.parameters[Targets.parameters[j]] && (min[j] = result.Items[i].attrs.parameters[Targets.parameters[j]]);

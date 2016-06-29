@@ -3,12 +3,9 @@
     "version": "1.0.0",
     "description": "a koa application",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "prestart":"npm run build",
+        "prestart": "npm run build",
         "start": "node lib/app.js",
-        "build": "babel src --out-dir lib",
-        "preaggregate":"npm run build",
-        "aggregate": "node lib/data-aggregation.js"
+        "build": "babel src --out-dir lib"
     },
     "author": "case2912",
     "license": "ISC",

@@ -23,17 +23,26 @@ export const statisticsTable = vogels.define("webgl_statistics_result", {
     timestamps: true,
     schema: {
         name: Joi.string(),
+        platform_name: Joi.string(),
+        platform_version: Joi.string(),
+        browser_name: Joi.string(),
+        browser_version: Joi.string(),
         data: Joi.object()
     }
 });
 
-vogels.createTables(err => {
-    if (err) {
-        console.log("Initializing DynamoDB tables was failed", err);
-    } else {
-        console.log("DynamoDB tables was initialized without any error");
-    }
-});
+export const createTables = () => {
+    return new Promise((resolve, reject) => {
+        vogels.createTables(err => {
+            if (err) {
+                reject("Initializing DynamoDB tables was failed", err);
+            } else {
+                console.log("DynamoDB tables was initialized without any error");
+                resolve();
+            }
+        });
+    });
+}
 
 export const put = (data) => {
     const parser = new UAParser();
@@ -116,13 +125,13 @@ const scan = async(name, value) => {
     });
 }
 const scanVersion = async(name, value) => {
-    const array = [""];
+    const array = ["-"];
     const scannedData = await scan(name, value);
     const version = name.replace("_name", "_version")
     return new Promise((resolve, reject) => {
         for (var i = 0; i < scannedData.Items.length; i++) {
-            if (!array.includes(scannedData.Items[i].attrs[version])) {
-                array.push(scannedData.Items[i].attrs[version]);
+            if (!array.includes(scannedData.Items[i].attrs[version].replace(/\.(.*)/, ""))) {
+                array.push(scannedData.Items[i].attrs[version].replace(/\.(.*)/, ""));
             }
         }
         resolve(array);
@@ -130,7 +139,7 @@ const scanVersion = async(name, value) => {
 }
 const queryStatistics = async(bname, bversion, pname, pversion) => {
     return new Promise((resolve, reject) => {
-        if (bname === "" && pname === "") {
+        if (bname === "-" && pname === "-") {
             //none
             console.log(0);
             table.scan()
@@ -141,9 +150,9 @@ const queryStatistics = async(bname, bversion, pname, pversion) => {
                         resolve(data);
                     }
                 });
-        } else if (bname !== "" && pname === "") {
+        } else if (bname !== "-" && pname === "-") {
             //bname
-            if (bversion === "") {
+            if (bversion === "-") {
                 console.log(1);
                 table.scan()
                     .where("browser_name").contains(bname)
@@ -167,9 +176,9 @@ const queryStatistics = async(bname, bversion, pname, pversion) => {
                         }
                     });
             }
-        } else if (bname === "" && pname !== "") {
+        } else if (bname === "-" && pname !== "-") {
             //pname
-            if (pversion === "") {
+            if (pversion === "-") {
                 console.log(3);
                 table.scan()
                     .where("platform_name").contains(pname)
@@ -194,7 +203,7 @@ const queryStatistics = async(bname, bversion, pname, pversion) => {
                     });
             }
         } else {
-            if (bversion === "" && pversion === "") {
+            if (bversion === "-" && pversion === "-") {
                 console.log(5);
                 //name only
                 table.scan()
@@ -207,7 +216,7 @@ const queryStatistics = async(bname, bversion, pname, pversion) => {
                             resolve(data);
                         }
                     });
-            } else if (bversion !== "" && pversion === "") {
+            } else if (bversion !== "-" && pversion === "-") {
                 //name bversion
                 console.log(6);
                 table.scan()
@@ -221,7 +230,7 @@ const queryStatistics = async(bname, bversion, pname, pversion) => {
                             resolve(data);
                         }
                     });
-            } else if (bversion === "" && pversion !== "") {
+            } else if (bversion === "-" && pversion !== "-") {
                 //name pversion
                 console.log(7);
                 table.scan()
@@ -258,11 +267,12 @@ const queryStatistics = async(bname, bversion, pname, pversion) => {
 const updateIndex = async() => {
     const result = {};
     result.browser = {
-        "": [""]
+        "-": ["-"]
     };
     result.platform = {
-        "": [""]
+        "-": ["-"]
     };
+    
     const bname = await scanName("browser_name");
     const pname = await scanName("platform_name");
     for (var i = 0; i < bname.length; i++) {
@@ -275,6 +285,7 @@ const updateIndex = async() => {
 }
 export const updateStatistics = async() => {
     const index = await updateIndex();
+    let temp = 0;
     for (var bname in index.browser) {
         for (var i = 0; i < index.browser[bname].length; i++) {
             for (var pname in index.platform) {
@@ -285,21 +296,38 @@ export const updateStatistics = async() => {
                     result.count = await statistics.extensions_count(data);
                     result.max = await statistics.parameters_max(data);
                     result.min = await statistics.parameters_min(data);
-                    let hashname = (bname + index.browser[bname][i] + pname + index.platform[pname][j]) !== "" ? bname + index.browser[bname][i] + pname + index.platform[pname][j] : "all";
                     await statisticsTable.create({
-                        name: hashname,
+                        name: bname + index.browser[bname][i] + pname + index.platform[pname][j],
+                        platform_name: pname,
+                        platform_version: index.platform[pname][j],
+                        browser_name: bname,
+                        browser_version: index.browser[bname][i],
                         data: result
+                    }, function(err, acc) {
+                        if (err) {
+                            console.log("Unable to insert element.", err);
+                        }
                     });
+                    temp++;
                 }
             }
         }
     }
     await console.log("updated statistics!");
+    await console.log(temp);
 }
-export const queryResult = (hash) => {
+export const queryResult = async(key) => {
     return new Promise((resolve, reject) => {
-        statisticsTable.scan()
-            .where("name").equals(hash)
+        let a = "-";
+        let b = "-";
+        let c = "-";
+        let d = "-";
+        if (typeof key.browser_name !== "undefined") a = key.browser_name;
+        if (typeof key.browser_version !== "undefined") b = key.browser_version;
+        if (typeof key.platform_name !== "undefined") c = key.platform_name;
+        if (typeof key.platform_version !== "undefined") d = key.platform_version;
+        const hash = a + b + c + d;
+        statisticsTable.query(hash)
             .exec((err, data) => {
                 if (err) {
                     reject(err);
