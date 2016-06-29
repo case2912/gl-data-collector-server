@@ -23,7 +23,12 @@ router.options('/record', async function(ctx, next) {
 router.get('/list', async function(ctx, next) {
     await next();
     let key = await querystring.parse(ctx.request.url.replace(/(.*)\?/, ""));
-    ctx.body = await db.queryResult(key);
+    const result = await db.queryResult(key);
+    if(result.Count === 0){
+      ctx.status = 404;
+    }else {
+      ctx.body = result;
+    }
 });
 app.listen(3000, () => {
     console.log("listening on port 3000");

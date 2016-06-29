@@ -27,6 +27,7 @@ export const statisticsTable = vogels.define("webgl_statistics_result", {
         platform_version: Joi.string(),
         browser_name: Joi.string(),
         browser_version: Joi.string(),
+        domain:Joi.string(),
         data: Joi.object()
     }
 });
@@ -272,7 +273,7 @@ const updateIndex = async() => {
     result.platform = {
         "-": ["-"]
     };
-    
+
     const bname = await scanName("browser_name");
     const pname = await scanName("platform_name");
     for (var i = 0; i < bname.length; i++) {
