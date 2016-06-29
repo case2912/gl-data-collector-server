@@ -20,7 +20,7 @@ vogels.createTables(err => {
         console.log("DynamoDB tables was initialized without any error");
     }
 });
-export const isAggregated = (name) => {
+const isAggregated = (name) => {
     return new Promise((resolve, reject) => {
         statisticsTable
             .scan()
@@ -39,3 +39,31 @@ export const isAggregated = (name) => {
             });
     });
 }
+const scan = () => {
+    return new Promise((resolve, reject) => {
+        statisticsTable
+            .scan()
+            .exec((err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            });
+    });
+}
+const scanBrowserName = async() => {
+    const array = [];
+    const scannedData = await scan();
+    return new Promise((resolve, reject) => {
+        for (var i = 0; i < scannedData.Items.length; i++) {
+            if (!array.includes(scannedData.Items[i].attrs.name)) {
+                array.push(scannedData.Items[i].attrs.name);
+            }
+        }
+        resolve(array);
+    });
+}
+scanBrowserName().then(result => {
+    console.log(result);
+});

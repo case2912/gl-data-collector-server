@@ -1,4 +1,5 @@
 import "babel-polyfill";
+import querystring from "querystring";
 import Koa from 'koa';
 import routerGenerator from "koa-router";
 import bodyParser from "koa-bodyparser";
@@ -7,6 +8,11 @@ import * as statistics from "./statistics";
 import React from "react";
 const app = new Koa();
 const router = new routerGenerator();
+router.get('/', async function(ctx, next) {
+    await next();
+    console.log(querystring.parse(ctx.request.url.replace(/(.*)\?/, "")));
+    ctx.body = await db.queryResult("all");
+});
 router.post('/record', async function(ctx, next) {
     ctx.response.set("Access-Control-Allow-Origin", "*");
     await next();
@@ -25,6 +31,8 @@ router.get('/list', async function(ctx, next) {
 });
 router.get('/list/browser', async function(ctx, next) {
     await next();
+    const urlObject = new url();
+    console.log(urlObject.query(x.request.url));
     ctx.body = "/list/browser";
 });
 router.get('/list/browser/:browser_name', async function(ctx, next) {
