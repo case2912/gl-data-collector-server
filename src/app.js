@@ -40,9 +40,10 @@ app.listen(3000, () => {
 app.use(bodyParser()).use(router.routes()).use(router.allowedMethods());
 const dbInit = async() => {
     await db.createTables();
-    await db.updateStatistics();
-    // await new CronJob('*/10 * * * *', function() {
-    //     console.log('You will see this message every second');
-    // }, null, true, 'America/Los_Angeles');
+
+    await new CronJob('*/3 * * * *', async function() {
+        await console.log('cron start!');
+        //await db.updateStatistics();
+    }, null, true, 'America/Los_Angeles');
 }
 dbInit();
