@@ -20,14 +20,18 @@ router.options('/record', async function(ctx, next) {
     ctx.response.set("Access-Control-Allow-Origin", "*");
     ctx.response.set("Access-Control-Allow-Headers", "Content-Type");
 });
+router.get("/", async(ctx, next) => {
+    await next();
+    ctx.body = "/list ?browser_name=value &browser_version=value &platform_name=value &platform_version=value";
+});
 router.get('/list', async function(ctx, next) {
     await next();
     let key = await querystring.parse(ctx.request.url.replace(/(.*)\?/, ""));
     const result = await db.queryResult(key);
-    if(result.Count === 0){
-      ctx.status = 404;
-    }else {
-      ctx.body = result;
+    if (result.Count === 0) {
+        ctx.status = 404;
+    } else {
+        ctx.body = result;
     }
 });
 app.listen(3000, () => {

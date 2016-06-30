@@ -27,7 +27,7 @@ export const statisticsTable = vogels.define("webgl_statistics_result", {
         platform_version: Joi.string(),
         browser_name: Joi.string(),
         browser_version: Joi.string(),
-        domain:Joi.string(),
+        domain: Joi.string(),
         data: Joi.object()
     }
 });
@@ -286,7 +286,6 @@ const updateIndex = async() => {
 }
 export const updateStatistics = async() => {
     const index = await updateIndex();
-    let temp = 0;
     for (var bname in index.browser) {
         for (var i = 0; i < index.browser[bname].length; i++) {
             for (var pname in index.platform) {
@@ -309,13 +308,11 @@ export const updateStatistics = async() => {
                             console.log("Unable to insert element.", err);
                         }
                     });
-                    temp++;
                 }
             }
         }
     }
     await console.log("updated statistics!");
-    await console.log(temp);
 }
 export const queryResult = async(key) => {
     return new Promise((resolve, reject) => {
