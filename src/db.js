@@ -419,6 +419,21 @@ const updateIndex = async() => {
     }
     return result;
 }
+const isExistItem = (hash) => {
+    return new Promise((resolve, reject) => {
+        statisticsTable.query(hash)
+            .exec((err, data) => {
+                if (err) {
+                    reject(err);
+                } else if (data.Count === 0) {
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            });
+    });
+}
+
 export const updateStatistics = async() => {
     const index = await updateIndex();
     let temp = 0;
@@ -430,22 +445,39 @@ export const updateStatistics = async() => {
                         console.log(bname, index.browser[bname][i], pname, index.platform[pname][j], index.domain[k]);
                         const data = await queryStatistics(bname, index.browser[bname][i], pname, index.platform[pname][j], "-");
                         const result = {};
+                        let hash = bname + index.browser[bname][i] + pname + index.platform[pname][j] + index.domain[k];
                         result.count = await statistics.extensions_count(data);
                         result.max = await statistics.parameters_max(data);
                         result.min = await statistics.parameters_min(data);
-                        await statisticsTable.create({
-                            name: bname + index.browser[bname][i] + pname + index.platform[pname][j] + index.domain[k],
-                            platform_name: pname,
-                            platform_version: index.platform[pname][j],
-                            browser_name: bname,
-                            browser_version: index.browser[bname][i],
-                            domain: index.domain[k],
-                            data: result
-                        }, function(err, acc) {
-                            if (err) {
-                                console.log("Unable to insert element.", err);
-                            }
-                        });
+                        if (!isExistItem(hash)) {
+                            await statisticsTable.create({
+                                name: bname + index.browser[bname][i] + pname + index.platform[pname][j] + index.domain[k],
+                                platform_name: pname,
+                                platform_version: index.platform[pname][j],
+                                browser_name: bname,
+                                browser_version: index.browser[bname][i],
+                                domain: index.domain[k],
+                                data: result
+                            }, function(err, acc) {
+                                if (err) {
+                                    console.log("Unable to insert element.", err);
+                                }
+                            });
+                        } else {
+                            await statisticsTable.update({
+                                name: bname + index.browser[bname][i] + pname + index.platform[pname][j] + index.domain[k],
+                                platform_name: pname,
+                                platform_version: index.platform[pname][j],
+                                browser_name: bname,
+                                browser_version: index.browser[bname][i],
+                                domain: index.domain[k],
+                                data: result
+                            }, (err, acc) => {
+                                if (err) {
+                                    console.log("Unable to update element.", err);
+                                }
+                            });
+                        }
                         temp++;
                     }
 
