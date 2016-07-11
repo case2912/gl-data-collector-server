@@ -28,7 +28,8 @@ export const statisticsTable = vogels.define("webgl_statistics_result", {
         browser_name: Joi.string(),
         browser_version: Joi.string(),
         domain: Joi.string(),
-        data: Joi.object()
+        data: Joi.object(),
+        index: Joi.object()
     }
 });
 
@@ -436,6 +437,24 @@ const isExistItem = (hash) => {
 
 export const updateStatistics = async() => {
     const index = await updateIndex();
+    if (!isExistItem("index")) {
+        await statisticsTable.create({
+            name: "index",
+            index: index
+        }, (err) => {
+            console.log(err);
+        });
+    } else {
+        await statisticsTable.update({
+            name: "index",
+            index: index
+        }, (err, acc) => {
+            if (err) {
+                console.log("Unable to update element.", err);
+            }
+        });
+    }
+
     let temp = 0;
     for (var bname in index.browser) {
         for (var i = 0; i < index.browser[bname].length; i++) {
