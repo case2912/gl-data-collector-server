@@ -1,4 +1,5 @@
 import "babel-polyfill";
+import ProgressBar from "progress";
 import vogels from "vogels";
 import Joi from "joi";
 import UAParser from "ua-parser-js";
@@ -144,7 +145,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
         if (domain === "-") {
             if (bname === "-" && pname === "-") {
                 //none
-                console.log(0);
                 table.scan()
                     .exec((err, data) => {
                         if (err) {
@@ -156,7 +156,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
             } else if (bname !== "-" && pname === "-") {
                 //bname
                 if (bversion === "-") {
-                    console.log(1);
                     table.scan()
                         .where("browser_name").contains(bname)
                         .exec((err, data) => {
@@ -167,7 +166,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                             }
                         });
                 } else {
-                    console.log(2);
                     table.scan()
                         .where("browser_name").contains(bname)
                         .where("browser_version").contains(bversion)
@@ -182,7 +180,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
             } else if (bname === "-" && pname !== "-") {
                 //pname
                 if (pversion === "-") {
-                    console.log(3);
                     table.scan()
                         .where("platform_name").contains(pname)
                         .exec((err, data) => {
@@ -193,7 +190,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                             }
                         });
                 } else {
-                    console.log(4);
                     table.scan()
                         .where("platform_name").contains(pname)
                         .where("platform_version").contains(pversion)
@@ -207,7 +203,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                 }
             } else {
                 if (bversion === "-" && pversion === "-") {
-                    console.log(5);
                     //name only
                     table.scan()
                         .where("browser_name").contains(bname)
@@ -221,7 +216,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                         });
                 } else if (bversion !== "-" && pversion === "-") {
                     //name bversion
-                    console.log(6);
                     table.scan()
                         .where("browser_name").contains(bname)
                         .where("browser_version").contains(bversion)
@@ -235,7 +229,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                         });
                 } else if (bversion === "-" && pversion !== "-") {
                     //name pversion
-                    console.log(7);
                     table.scan()
                         .where("browser_name").contains(bname)
                         .where("platform_name").contains(pname)
@@ -248,7 +241,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                             }
                         });
                 } else {
-                    console.log(8);
                     //name bversion and pversion
                     table.scan()
                         .where("browser_name").contains(bname)
@@ -267,7 +259,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
         } else {
             if (bname === "-" && pname === "-") {
                 //none
-                console.log(0);
                 table.scan()
                     .where("domain").contains(domain)
                     .exec((err, data) => {
@@ -280,7 +271,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
             } else if (bname !== "-" && pname === "-") {
                 //bname
                 if (bversion === "-") {
-                    console.log(1);
                     table.scan()
                         .where("domain").contains(domain)
                         .where("browser_name").contains(bname)
@@ -292,7 +282,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                             }
                         });
                 } else {
-                    console.log(2);
                     table.scan()
                         .where("domain").contains(domain)
                         .where("browser_name").contains(bname)
@@ -308,7 +297,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
             } else if (bname === "-" && pname !== "-") {
                 //pname
                 if (pversion === "-") {
-                    console.log(3);
                     table.scan()
                         .where("domain").contains(domain)
                         .where("platform_name").contains(pname)
@@ -320,7 +308,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                             }
                         });
                 } else {
-                    console.log(4);
                     table.scan()
                         .where("domain").contains(domain)
                         .where("platform_name").contains(pname)
@@ -335,7 +322,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                 }
             } else {
                 if (bversion === "-" && pversion === "-") {
-                    console.log(5);
                     //name only
                     table.scan()
                         .where("domain").contains(domain)
@@ -350,7 +336,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                         });
                 } else if (bversion !== "-" && pversion === "-") {
                     //name bversion
-                    console.log(6);
                     table.scan()
                         .where("domain").contains(domain)
                         .where("browser_name").contains(bname)
@@ -365,7 +350,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                         });
                 } else if (bversion === "-" && pversion !== "-") {
                     //name pversion
-                    console.log(7);
                     table.scan()
                         .where("domain").contains(domain)
                         .where("browser_name").contains(bname)
@@ -379,7 +363,6 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
                             }
                         });
                 } else {
-                    console.log(8);
                     //name bversion and pversion
                     table.scan()
                         .where("domain").contains(domain)
@@ -409,7 +392,6 @@ const updateIndex = async() => {
     };
     result.domain = await scanName("domain");
     result.domain.push("-");
-    console.log(result);
     const bname = await scanName("browser_name");
     const pname = await scanName("platform_name");
     for (var i = 0; i < bname.length; i++) {
@@ -454,14 +436,26 @@ export const updateStatistics = async() => {
             }
         });
     }
-
+    let count = index.domain.length;
+    let bcount = 0;
+    let pcount = 0;
+    for (var bname in index.browser) {
+        bcount += index.browser[bname].length;
+    }
+    for (var pname in index.platform) {
+        pcount += index.platform[pname].length;
+    }
+    var bar = new ProgressBar('updating [:bar] :percent(:current/:total)', {
+        total: count * pcount * bcount,
+        width: 20,
+        clear:true
+    });
     let temp = 0;
     for (var bname in index.browser) {
         for (var i = 0; i < index.browser[bname].length; i++) {
             for (var pname in index.platform) {
                 for (var j = 0; j < index.platform[pname].length; j++) {
                     for (var k = 0; k < index.domain.length; k++) {
-                        console.log(bname, index.browser[bname][i], pname, index.platform[pname][j], index.domain[k]);
                         const data = await queryStatistics(bname, index.browser[bname][i], pname, index.platform[pname][j], "-");
                         const result = {};
                         let hash = bname + index.browser[bname][i] + pname + index.platform[pname][j] + index.domain[k];
@@ -498,6 +492,7 @@ export const updateStatistics = async() => {
                             });
                         }
                         temp++;
+                        bar.tick();
                     }
 
                 }
@@ -505,7 +500,6 @@ export const updateStatistics = async() => {
         }
     }
     await console.log("updated statistics!");
-    await console.log(temp);
 }
 export const queryResult = async(key) => {
     return new Promise((resolve, reject) => {
