@@ -22,10 +22,12 @@ router.options('/record', async function(ctx, next) {
 });
 router.get("/", async(ctx, next) => {
     await next();
+    ctx.response.set("Access-Control-Allow-Origin", "*");
     ctx.body = "/list?browser_name=chrome&browser_version=51&platform_name=macos&platform_version=10&domain=10.32.218.191";
 });
 router.get('/list', async function(ctx, next) {
     await next();
+    ctx.response.set("Access-Control-Allow-Origin", "*");
     let key = await querystring.parse(ctx.request.url.replace(/(.*)\?/, ""));
     const result = await db.queryResult(key);
     if (result.Count === 0) {
