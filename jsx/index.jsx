@@ -15,8 +15,8 @@ export default class Home extends React.Component {
             value: 1
         };
     }
-    handleChange(event, selectedIndex, menuItem) {
-        this.setState({value: 2});
+    handleChange(event, index, item) {
+        this.setState({value: item});
     }
     render() {
         return (
