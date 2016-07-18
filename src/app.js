@@ -27,6 +27,10 @@ router.get("/", async(ctx, next) => {
     ctx.response.set("Access-Control-Allow-Origin", "*");
     ctx.body = "/list?browser_name=chrome&browser_version=51&platform_name=macos&platform_version=10&domain=10.32.218.191";
 });
+router.get("/list/index", async(ctx, next) => {
+    const result = await db.getIndex();
+    ctx.body = result.Items[0];
+});
 router.get('/list', async function(ctx, next) {
     await next();
     ctx.response.set("Access-Control-Allow-Origin", "*");
@@ -37,10 +41,6 @@ router.get('/list', async function(ctx, next) {
     } else {
         ctx.body = result;
     }
-});
-router.get("/list/index", async(ctx, next) => {
-    const result = await db.getIndex();
-    ctx.body = result.Items[0];
 });
 app.listen(3000, () => {
     console.log("listening on port 3000");
