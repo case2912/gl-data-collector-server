@@ -70,35 +70,28 @@ export const put = (data) => {
 }
 export const scanAll = () => {
     return new Promise((resolve, reject) => {
-        table
-            .scan()
-            .loadAll()
-            .exec((err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
+        table.scan().loadAll().exec((err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
     });
 }
 const isAggregated = (name) => {
     return new Promise((resolve, reject) => {
-        statisticsTable
-            .scan()
-            .where('name').equals(name)
-            .select('COUNT')
-            .exec((err, data) => {
-                if (err) {
-                    reject(err);
+        statisticsTable.scan().where('name').equals(name).select('COUNT').exec((err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                if (data.Count === 0) {
+                    resolve(false);
                 } else {
-                    if (data.Count === 0) {
-                        resolve(false);
-                    } else {
-                        resolve(true);
-                    }
+                    resolve(true);
                 }
-            });
+            }
+        });
     });
 }
 const scanName = async(name) => {
@@ -115,16 +108,13 @@ const scanName = async(name) => {
 }
 const scan = async(name, value) => {
     return new Promise((resolve, reject) => {
-        table
-            .scan()
-            .where(name).equals(value)
-            .exec((err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
+        table.scan().where(name).equals(value).exec((err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
     });
 }
 const scanVersion = async(name, value) => {
@@ -145,238 +135,175 @@ const queryStatistics = async(bname, bversion, pname, pversion, domain) => {
         if (domain === "-") {
             if (bname === "-" && pname === "-") {
                 //none
-                table.scan()
-                    .exec((err, data) => {
+                table.scan().exec((err, data) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(data);
+                    }
+                });
+            } else if (bname !== "-" && pname === "-") {
+                //bname
+                if (bversion === "-") {
+                    table.scan().where("browser_name").contains(bname).exec((err, data) => {
                         if (err) {
                             reject(err);
                         } else {
                             resolve(data);
                         }
                     });
-            } else if (bname !== "-" && pname === "-") {
-                //bname
-                if (bversion === "-") {
-                    table.scan()
-                        .where("browser_name").contains(bname)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
                 } else {
-                    table.scan()
-                        .where("browser_name").contains(bname)
-                        .where("browser_version").contains(bversion)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("browser_name").contains(bname).where("browser_version").contains(bversion).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 }
             } else if (bname === "-" && pname !== "-") {
                 //pname
                 if (pversion === "-") {
-                    table.scan()
-                        .where("platform_name").contains(pname)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("platform_name").contains(pname).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 } else {
-                    table.scan()
-                        .where("platform_name").contains(pname)
-                        .where("platform_version").contains(pversion)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("platform_name").contains(pname).where("platform_version").contains(pversion).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 }
             } else {
                 if (bversion === "-" && pversion === "-") {
                     //name only
-                    table.scan()
-                        .where("browser_name").contains(bname)
-                        .where("platform_name").contains(pname)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("browser_name").contains(bname).where("platform_name").contains(pname).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 } else if (bversion !== "-" && pversion === "-") {
                     //name bversion
-                    table.scan()
-                        .where("browser_name").contains(bname)
-                        .where("browser_version").contains(bversion)
-                        .where("platform_name").contains(pname)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("browser_name").contains(bname).where("browser_version").contains(bversion).where("platform_name").contains(pname).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 } else if (bversion === "-" && pversion !== "-") {
                     //name pversion
-                    table.scan()
-                        .where("browser_name").contains(bname)
-                        .where("platform_name").contains(pname)
-                        .where("platform_version").contains(pversion)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("browser_name").contains(bname).where("platform_name").contains(pname).where("platform_version").contains(pversion).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 } else {
                     //name bversion and pversion
-                    table.scan()
-                        .where("browser_name").contains(bname)
-                        .where("browser_version").contains(bversion)
-                        .where("platform_name").contains(pname)
-                        .where("platform_version").contains(pversion)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("browser_name").contains(bname).where("browser_version").contains(bversion).where("platform_name").contains(pname).where("platform_version").contains(pversion).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 }
             }
         } else {
             if (bname === "-" && pname === "-") {
                 //none
-                table.scan()
-                    .where("domain").contains(domain)
-                    .exec((err, data) => {
+                table.scan().where("domain").contains(domain).exec((err, data) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(data);
+                    }
+                });
+            } else if (bname !== "-" && pname === "-") {
+                //bname
+                if (bversion === "-") {
+                    table.scan().where("domain").contains(domain).where("browser_name").contains(bname).exec((err, data) => {
                         if (err) {
                             reject(err);
                         } else {
                             resolve(data);
                         }
                     });
-            } else if (bname !== "-" && pname === "-") {
-                //bname
-                if (bversion === "-") {
-                    table.scan()
-                        .where("domain").contains(domain)
-                        .where("browser_name").contains(bname)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
                 } else {
-                    table.scan()
-                        .where("domain").contains(domain)
-                        .where("browser_name").contains(bname)
-                        .where("browser_version").contains(bversion)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("domain").contains(domain).where("browser_name").contains(bname).where("browser_version").contains(bversion).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 }
             } else if (bname === "-" && pname !== "-") {
                 //pname
                 if (pversion === "-") {
-                    table.scan()
-                        .where("domain").contains(domain)
-                        .where("platform_name").contains(pname)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("domain").contains(domain).where("platform_name").contains(pname).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 } else {
-                    table.scan()
-                        .where("domain").contains(domain)
-                        .where("platform_name").contains(pname)
-                        .where("platform_version").contains(pversion)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("domain").contains(domain).where("platform_name").contains(pname).where("platform_version").contains(pversion).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 }
             } else {
                 if (bversion === "-" && pversion === "-") {
                     //name only
-                    table.scan()
-                        .where("domain").contains(domain)
-                        .where("browser_name").contains(bname)
-                        .where("platform_name").contains(pname)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("domain").contains(domain).where("browser_name").contains(bname).where("platform_name").contains(pname).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 } else if (bversion !== "-" && pversion === "-") {
                     //name bversion
-                    table.scan()
-                        .where("domain").contains(domain)
-                        .where("browser_name").contains(bname)
-                        .where("browser_version").contains(bversion)
-                        .where("platform_name").contains(pname)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("domain").contains(domain).where("browser_name").contains(bname).where("browser_version").contains(bversion).where("platform_name").contains(pname).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 } else if (bversion === "-" && pversion !== "-") {
                     //name pversion
-                    table.scan()
-                        .where("domain").contains(domain)
-                        .where("browser_name").contains(bname)
-                        .where("platform_name").contains(pname)
-                        .where("platform_version").contains(pversion)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("domain").contains(domain).where("browser_name").contains(bname).where("platform_name").contains(pname).where("platform_version").contains(pversion).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 } else {
                     //name bversion and pversion
-                    table.scan()
-                        .where("domain").contains(domain)
-                        .where("browser_name").contains(bname)
-                        .where("browser_version").contains(bversion)
-                        .where("platform_name").contains(pname)
-                        .where("platform_version").contains(pversion)
-                        .exec((err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(data);
-                            }
-                        });
+                    table.scan().where("domain").contains(domain).where("browser_name").contains(bname).where("browser_version").contains(bversion).where("platform_name").contains(pname).where("platform_version").contains(pversion).exec((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 }
             }
         }
@@ -404,16 +331,15 @@ const updateIndex = async() => {
 }
 const isExistItem = (hash) => {
     return new Promise((resolve, reject) => {
-        statisticsTable.query(hash)
-            .exec((err, data) => {
-                if (err) {
-                    reject(err);
-                } else if (data.Count === 0) {
-                    resolve(false);
-                } else {
-                    resolve(true);
-                }
-            });
+        statisticsTable.query(hash).exec((err, data) => {
+            if (err) {
+                reject(err);
+            } else if (data.Count === 0) {
+                resolve(false);
+            } else {
+                resolve(true);
+            }
+        });
     });
 }
 
@@ -448,7 +374,7 @@ export const updateStatistics = async() => {
     var bar = new ProgressBar('updating [:bar] :percent(:current/:total)', {
         total: count * pcount * bcount,
         width: 20,
-        clear:true
+        clear: true
     });
     let temp = 0;
     for (var bname in index.browser) {
@@ -508,20 +434,35 @@ export const queryResult = async(key) => {
         let c = "-";
         let d = "-";
         let e = "-";
-        if (typeof key.browser_name !== "undefined") a = key.browser_name;
-        if (typeof key.browser_version !== "undefined") b = key.browser_version;
-        if (typeof key.platform_name !== "undefined") c = key.platform_name;
-        if (typeof key.platform_version !== "undefined") d = key.platform_version;
-        if (typeof key.domain !== "undefined") e = key.domain;
+        if (typeof key.browser_name !== "undefined")
+            a = key.browser_name;
+        if (typeof key.browser_version !== "undefined")
+            b = key.browser_version;
+        if (typeof key.platform_name !== "undefined")
+            c = key.platform_name;
+        if (typeof key.platform_version !== "undefined")
+            d = key.platform_version;
+        if (typeof key.domain !== "undefined")
+            e = key.domain;
 
         const hash = a + b + c + d + e;
-        statisticsTable.query(hash)
-            .exec((err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
+        statisticsTable.query(hash).exec((err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
+    });
+}
+export const getIndex = async() => {
+    return new Promise((resolve, reject) => {
+        statisticsTable.query("index").exec((err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
     });
 }

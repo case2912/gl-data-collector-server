@@ -6,7 +6,7 @@
     "prestart": "npm run build",
     "start": "node lib/app.js",
     "build": "babel src --out-dir lib",
-    "bundle": "browserify -t [ babelify ] jsx/index.jsx -o dist/bundle.js & open index.html"
+    "bundle": "browserify -t [ babelify ] jsx/index.jsx -o dist/bundle.js"
   },
   "author": "case2912",
   "license": "ISC",

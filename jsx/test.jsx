@@ -8,7 +8,7 @@ export default class Chart extends React.Component {
             count: ""
         }
     }
-    test() {
+    test () {
         request.get("http://wglstat.grimoire.gl/list", function(err, res, body) {
             this.setState({
                 count: this.state.count + body

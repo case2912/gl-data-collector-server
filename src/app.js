@@ -6,7 +6,9 @@ import bodyParser from "koa-bodyparser";
 import * as db from "./db";
 import * as statistics from "./statistics";
 import React from "react";
-import {CronJob} from "cron";
+import {
+    CronJob
+} from "cron";
 const app = new Koa();
 const router = new routerGenerator();
 router.post('/record', async function(ctx, next) {
@@ -36,6 +38,10 @@ router.get('/list', async function(ctx, next) {
         ctx.body = result;
     }
 });
+router.get("/list/index", async(ctx, next) => {
+    const result = await db.getIndex();
+    ctx.body = result.Items[0];
+});
 app.listen(3000, () => {
     console.log("listening on port 3000");
 });
@@ -44,7 +50,7 @@ const dbInit = async() => {
     await db.createTables();
     await console.log('cron start!');
     await new CronJob('00 30 11 * * 1-5', async function() {
-    await db.updateStatistics();
+        await db.updateStatistics();
     }, null, true, 'America/Los_Angeles');
 }
 dbInit();
