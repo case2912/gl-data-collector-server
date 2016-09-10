@@ -5,7 +5,6 @@ import routerGenerator from "koa-router";
 import bodyParser from "koa-bodyparser";
 import * as db from "./db";
 import * as statistics from "./statistics";
-import React from "react";
 import {
     CronJob
 } from "cron";
